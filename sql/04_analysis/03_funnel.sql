@@ -77,10 +77,14 @@ SELECT
   user_completion_rate,
   win_rate,
   struggle_ratio,
+  -- SAFE_DIVIDE: hasilnya NULL (bukan error) kalau pembaginya 0
   IF(mode = 'progression',
-     ROUND(100 * users_started / FIRST_VALUE(users_started) OVER w, 1), NULL) AS reach_pct,
+     ROUND(100 * SAFE_DIVIDE(users_started, FIRST_VALUE(users_started) OVER w), 1), NULL) AS reach_pct,
   IF(mode = 'progression',
-     ROUND(100 * (1 - users_started / LAG(users_started) OVER w), 1), NULL)   AS drop_from_prev_pct
+     ROUND(100 * (1 - SAFE_DIVIDE(users_started, LAG(users_started) OVER w)), 1), NULL)   AS drop_from_prev_pct
 FROM flood_it_analytics.fct_level_funnel
+-- level 0 dan 31 hanya muncul di event retry/reset, tanpa level_start;
+-- kalau ikut, level 0 jadi "level pertama" dan semua reach_pct jadi kosong
+WHERE users_started > 0
 WINDOW w AS (PARTITION BY mode ORDER BY level_num, level_or_board)
 ORDER BY mode, level_num, level_or_board;
