@@ -1,5 +1,5 @@
 -- =====================================================================
--- CEK 4: SEQUENCE (urutan event logis)
+-- CEK 03: SEQUENCE (urutan event logis)
 -- Pertanyaan: Apakah setiap level_end didahului level_start untuk level/papan yang sama?
 --   start tanpa end = wajar (pemain berhenti di tengah jalan)
 --   end tanpa start = TIDAK wajar (event hilang, tracking salah, atau efek sampling)
@@ -9,7 +9,7 @@
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- 4a: level_end didahului level_start?
+-- 3a: level_end didahului level_start?
 -- ---------------------------------------------------------------------
 WITH lv AS (
   SELECT
@@ -60,7 +60,7 @@ ORDER BY mode, platform;
 
 
 -- ---------------------------------------------------------------------
--- 4b: post_score dikirim setelah event apa?
+-- 3b: post_score dikirim setelah event apa?
 -- Tujuan: memastikan post_score muncul di mode Progression saja
 -- atau juga di Quickplay.
 -- ---------------------------------------------------------------------
