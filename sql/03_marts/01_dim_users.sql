@@ -12,6 +12,9 @@ WITH agg AS (
   SELECT
     user_pseudo_id,
     MIN(IF(event_name = 'first_open', event_ts, NULL)) AS first_open_ts,
+    -- pakai event_date (zona waktu laporan Firebase), BUKAN DATE(event_ts) yang UTC,
+    -- supaya sama dengan event_date di fct_daily_users
+    MIN(IF(event_name = 'first_open', event_date, NULL)) AS first_open_date,
     MIN(event_ts)                                      AS first_event_ts,
     MIN(event_date)                                    AS first_seen_date,
     MAX(event_date)                                    AS last_seen_date,
@@ -28,7 +31,7 @@ WITH agg AS (
 
 SELECT
   user_pseudo_id,
-  DATE(first_open_ts)            AS install_date,
+  first_open_date                AS install_date,
   first_open_ts IS NOT NULL      AS is_new_user,   -- install di dalam periode data
   first_seen_date,
   last_seen_date,
